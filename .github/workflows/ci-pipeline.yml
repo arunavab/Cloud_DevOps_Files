@@ -21,3 +21,7 @@ jobs:
 
       - name: Run Python script
         run: python hello.py
+
+      - name: Run Tests
+        run: python test_hello.py
+
