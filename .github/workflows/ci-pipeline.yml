@@ -44,16 +44,24 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: test
-    if: github.event_name == 'push'   # don't push images on PRs
+    if: github.event_name == 'push'
     steps:
+      - uses: actions/checkout@v4
+
       - name: Login to DockerHub
         uses: docker/login-action@v3
         with:
           username: robertwrites
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Push images
-        run: |
-          IMAGE=robertwrites/hello-app
-          docker push $IMAGE:latest
-          docker push $IMAGE:${{ github.sha }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            robertwrites/hello-app:latest
+            robertwrites/hello-app:${{ github.sha }}
